@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="index">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Webflix - Streaming Media Theme - Homepage v2</title>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="assets/img/x-icon"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/apple-touch-icon.png}"/>
+
+    <!--     Include UIKit CSS   -->
+    <link rel="stylesheet" th:href="@{/css/uikit.min.css}"/>
+
+    <!--     Theme CSS   -->
+    <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+    <link href="http://vjs.zencdn.net/5.10.7/video-js.css" rel="stylesheet"/>
+    <style>
+        .cover-img {
+            width:100%;
+            height:100%;
+        }
+
+        .view {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+
+<!--     start Main Content Section   -->
+
+<div class="uk-container uk-container-center uk-margin-large-top uk-margin-large-bottom">
+    <div class="uk-grid">
+        <div id="tm-right-section" class="uk-width-large-1-1 uk-width-medium-1-1"  data-uk-scrollspy="{cls:'uk-animation-fade', target:'img'}">
+            <div id="uk-grid" class="uk-grid-width-small-1-3, uk-grid-width-medium-1-4 uk-grid-width-large-1-5"  >
+                <div class="view" th:each="fav, index : ${favs}" th:id="@{''+paging-+''+${index.count}}" th:attr="data-video-seq=${fav.video_seq}" th:attrappend="data-video-kind-seq=${fav.videosEntity.video_kind_seq}">
+                    <div class="uk-overlay uk-overlay-hover" style="width:100%; height:300px;">
+                        <img class="cover-img" alt="Image" th:src="@{'/viewer/image/'+${fav.video_seq}}"/>
+                        <div class="uk-overlay-panel uk-overlay-fade uk-overlay-background  uk-overlay-icon"></div>
+                        <a class="uk-position-cover"></a>
+                    </div>
+                    <div class="uk-panel" >
+                        <h5 class="uk-panel-title" th:text="${fav.videosEntity.title3}"></h5>
+                        <p>
+                            <span class="rating">
+                                <i class="uk-icon-star"></i>
+                                <i class="uk-icon-star"></i>
+                                <i class="uk-icon-star"></i>
+                                <i class="uk-icon-star"></i>
+                                <i class="uk-icon-star"></i>
+                            </span>
+                            <span class="uk-float-right">2016</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-margin-large-top uk-margin-bottom">
+                <ul class="uk-pagination" >
+                    <!--<li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>-->
+                    <!--<li th:class="${index.count / 20 == 1 ? 'uk-active' : ''}" th:each="video, index : ${videos}" th:if="${index.count % 20 == 0}"><span th:text="${index.size/20}"></span></li>-->
+
+                    <!--<li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--     ./ Main Content Section   -->
+<div class="video-fade">
+    <video id="video" controls="controls" class="video-js vjs-default-skin vjs-big-play-centered" preload="none" width="100%" height="100%" style="width:100%; height:100%;">
+        <source type="video/mp4"/>
+    </video>
+    <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+    <i class="fa fa-th-list" aria-hidden="true"></i>
+    <div class="play-list-fade">
+        <div class="play-list-content"></div>
+        <div class="play-list-menu">
+            <h3 style="padding-left:10px;">재생목록</h3>
+            <ul class="uk-list uk-list-line" style="padding-top:20px;">
+                <li th:each="fav, index:${favs}" th:attr="data-video-seq=${fav.video_seq}" th:attrappend="data-video-kind-seq=${fav.videosEntity.video_kind_seq}">
+                    <span style="padding-left:10px;" th:text="${fav.videosEntity.title3}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="next-movie">
+        <div>
+            <img src=""/>
+            <i class="fa fa-play-circle-o next-movie-icon" aria-hidden="true"/>
+            <div class="next-movie-text"><span>10</span>초후 자동재생됩니다.</div>
+        </div>
+    </div>
+</div>
+<!--   Include JS   -->
+
+    <script th:src="@{/js/jquery-3.1.0.js}"></script>
+    <script th:src="@{/js/uikit.min.js}"></script>
+    <script th:src="@{/js/components/grid.min.js}"></script>
+    <script th:src="@{/js/core/nav.min.js}"></script>
+    <script th:src="@{/js/components/pagination.js}"></script>
+    <script src="http://vjs.zencdn.net/5.10.7/video.js"></script>
+    <script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+    <script>
+        var player;
+
+        function fullScreenCheck() {
+            var flag = player.isFullscreen()
+            console.log(flag);
+            if(flag) {
+                // <![CDATA[
+                if($('.fa-th-list').attr('class').indexOf('fa-th-list-full') < 0) {
+                    $('.fa-th-list').addClass('fa-th-list-full');
+                    $('.fa-th-list').on('mouseenter', function() {
+                        console.log('111')
+                        $('.fa-th-list').trigger('click');
+                    })
+                    $('.play-list-menu').on('mouseleave', function() {
+                        $('.play-list-fade div:not(.play-list-menu)').trigger('click');
+                    })
+                }
+                // ]]>
+            } else {
+                $('.fa-th-list').removeClass('fa-th-list-full');
+                $('.fa-th-list').off('mouseenter');
+                $('.play-list-menu').off('mouseleave');
+            }
+        }
+
+        var fullCheck = setInterval(fullScreenCheck, 1000);
+
+        /*video 태그 로드 완료시*/
+        var video = videojs('video').ready(function(){
+            player = this;
+            $.videoEventSetting(player);
+        })
+
+        /* 플레이 리스트 열기 이벤트 */
+        $('.fa-th-list').click(function() {
+            $(this).hide();
+            $('.play-list-fade').fadeIn('slow');
+            $('.play-list-fade').off('click');
+            $('.play-list-fade div:not(.play-list-menu)').on('click',function() {
+                $('.play-list-fade').fadeOut('slow');
+                $('.fa-th-list').show();
+            })
+        })
+
+        /*뒤로가기 */
+        $('.fa-arrow-circle-o-left').click(function() {
+            player.pause();
+            $('html').removeClass('overflow-hidden');
+            $('footer').show();
+            $('.video-fade').slideUp('slow');
+            $('.video-btn-group').hide();
+            nextMovieHide();
+        })
+
+        /* 영상보기 클릭시 */
+        $('.view').click(function() {
+            var video_seq = $(this).attr('data-video-seq');
+            var video_kind_seq = $(this).attr('data-video-kind-seq');
+            var url = $.play(video_seq);
+
+            $.each($('.play-list-menu li'), function() {
+                if($(this).attr('data-video-seq') == video_seq) {
+                    $(this).addClass('active').prepend('<i class="fa fa-play-circle-o" aria-hidden="true" style="padding-left:5px;"/>');
+                }
+            })
+            $('.video-fade').slideDown('slow');
+            $('.video-btn-group').show();
+            player.src({"type":"video/mp4", "src":url});
+            player.play()
+
+            /*footer 숨기기*/
+            $('footer').hide();
+
+            /* html 스크롤 없애기*/
+            $('html').addClass('overflow-hidden');
+
+            /* 로그 기록 */
+            $.logSave(video_seq, video_kind_seq);
+        });
+
+        /* 플레이 리스트 다른영상 선택시*/
+        $('.play-list-menu li').click(function() {
+            $('.play-list-menu li i').remove();
+            $('.play-list-menu li').removeClass('active');
+            $(this).addClass('active');
+            $(this).prepend('<i class="fa fa-play-circle-o" aria-hidden="true" style="padding-left:5px;"/>');
+            var video_seq = $(this).attr('data-video-seq');
+            var url = $.play(video_seq);
+            player.src({"type":"video/mp4", "src":url});
+            player.play()
+
+            /* 로그 기록 */
+            var video_kind_seq = $(this).attr('data-video-kind-seq');
+            $.logSave(video_seq, video_kind_seq);
+        })
+
+        /* 동영상 플레이 function*/
+        $.play = function(video_seq) {
+            var url;
+            $.ajax({
+                url:'/viewer/video/'+video_seq,
+                type:'post',
+                async:false,
+                success:function(data) {
+                    url = data;
+                }, error:function(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+            return url;
+        }
+
+        /*로그 기록*/
+        $.logSave = function(video_seq, video_kind_seq) {
+            $.ajax({
+                url:'/media/log/save/' + video_kind_seq + '/'+video_seq,
+                type:'post',
+                success:function(data) {
+                    console.log(data)
+                }, error:function(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        }
+
+        /*비디오 이벤트 설정*/
+        $.videoEventSetting = function(pla) {
+            pla.off('ended').on('ended', function() {
+                $.each($('.play-list-menu li'), function() {
+                    var flag = false;
+                    var cla = $(this).attr('class');
+                    $(this).removeClass('active');
+                    if(cla == 'active') {
+                        $(this).next().addClass('active').trigger('click');
+                        nextMovieHide();
+                        flag = true;
+                    }
+                    if(flag) {
+                        return false;
+                    }
+                })
+            });
+
+            /*동영상 준비 완료 이벤트*/
+            pla.off('loadstart').on('loadstart', function() {
+                timeupdate(pla);
+            })
+        }
+
+
+        var timeupdateCount = 0;
+        function timeupdate(pla) {
+            pla.on('timeupdate', function() {
+                var duration = Math.floor(this.duration());
+                var current = Math.floor(this.currentTime());
+                // <![CDATA[
+
+                if((duration - 10) <= current) {
+                    $('.next-movie-text span').text(duration - current);
+                    if(timeupdateCount == 0) {
+                        nextMovieShow();
+                    }
+                    timeupdateCount++;
+
+                }
+                // ]]>
+            })
+        }
+
+        function nextMovieShow() {
+            var video_kind_seq = $('.play-list-menu li.active').next().attr('data-video-kind-seq');
+            var video_seq = $('.play-list-menu li.active').next().attr('data-video-seq');
+            $('.video-fade div.video-js').css({
+                'background-image':'url("/viewer/cover/'+video_kind_seq+'")',
+                'background-size':'100% 100%'
+            });
+            $('video').css({'width':'500px', 'height':'300px', 'top':'55px'});
+            $('.next-movie').show();
+            $('.next-movie img').attr('src', '/viewer/image/'+video_seq);
+        }
+
+        function nextMovieHide() {
+            $('.video-fade').children('div').css({
+                'background-image':'',
+                'background-size':''
+            });
+            $('video').css({'width':'100%', 'height':'100%', 'top':'0px'});
+            $('.next-movie').hide();
+        }
+    </script>
+    <!--그리드관련 스크립트-->
+    <script>
+        var grid = UIkit.grid($('#uk-grid'), {
+            gutter:20,
+            colwidth:'auto'
+        });
+        function paging(page) {
+            // <![CDATA[
+            var view = 20;
+            var start = 0;
+            if(page == 1) {
+                start = 0;
+            } else {
+                start = ((page -1) * view);
+            }
+            var end = page * view -1;
+
+            $.each($('.view'), function (i) {
+                $(this).show();
+                $(this).attr('style', 'position:absolute');
+                if(!(i >= start && i <= end)) {
+                    $(this).hide();
+                }
+            })
+
+            grid.init();
+            // ]]>
+
+        }
+
+        paging(1);
+        var max = Math.floor($('.view:last').index() / 20);
+        var pagination = UIkit.pagination($('.uk-pagination'), {
+            items:max+1,
+            itemOnPage:1
+        });
+
+        pagination.on('select.uk.pagination', function(e, pageIndex){
+            var page = pageIndex+1;
+            paging(page);
+        });
+
+    </script>
+</body>
+</html>

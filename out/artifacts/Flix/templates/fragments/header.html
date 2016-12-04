@@ -1,0 +1,71 @@
+<header layout:fragment="header">
+    <!--     start Header Section   -->
+    <nav id="tm-header" class="uk-navbar ">
+        <div class="uk-container uk-container-center ">
+            <a class="uk-navbar-brand uk-hidden-small" href="/"><i class="uk-icon-small uk-text-primary uk-margin-small-right uk-icon-play-circle"></i> WEBFLIX</a>
+            <div class="uk-navbar-flip uk-hidden-small">
+                <div class="uk-button-dropdown" aria-haspopup="true" aria-expended="false" aria-expanded="false">
+                    <button class="uk-dropdown-btn uk-button uk-button-link uk-button-large" sec:authentication="name"> <i class="uk-icon-caret-down"></i></button>
+                    <div class="uk-dropdown-content uk-dropdown uk-dropdown-bottom" style="top: 40px; left: -109px;">
+                        <ul class="uk-nav uk-nav-dropdown">
+                            <li class="nav-header">USER</li>
+                            <li><a href="/fav/list">플레이리스트</a></li>
+                            <li class="uk-nav-divider"></li>
+                            <li class="nav-header">ADMIN</li>
+                            <li><a href="/admin/kind">영화</a></li>
+                            <li class="uk-nav-divider"></li>
+                            <li><a href="/logout">로그아웃</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <a href="#offcanvas" class="uk-navbar-toggle uk-visible-small uk-icon-medium" data-uk-offcanvas="data-uk-offcanvas"></a>
+            <div class="uk-navbar-flip uk-visible-small">
+                <a href="#offcanvas" class="uk-navbar-toggle uk-navbar-toggle-alt uk-icon-medium" data-uk-offcanvas="data-uk-offcanvas"></a>
+            </div>
+            <div class="uk-navbar-brand uk-navbar-center uk-visible-small"><a class="uk-navbar-brand" href="/"><i class="uk-icon-small uk-text-primary uk-margin-small-right uk-icon-play-circle"></i> Webflix</a></div>
+        </div>
+    </nav>
+    <nav class="uk-navbar uk-navbar-secondary  uk-hidden-small">
+        <div class="uk-container-center uk-container">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><a href="/">전체</a></li>
+                <li><a href="#">추천</a></li>
+                <li><a href="/menu/영화">영화</a></li>
+                <li><a href="/menu/드라마">드라마</a></li>
+                <li class="uk-parent" data-uk-dropdown="data-uk-dropdown">
+                    <a href="#">장르 <i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                    <div class="uk-dropdown uk-dropdown-navbar">
+                        <ul class="uk-nav uk-nav-navbar">
+                            <li><a href="/menu/판타지">판타지</a></li>
+                            <li><a href="/menu/애니">애니</a> </li>
+                            <li><a href="/menu/SF">SF</a> </li>
+                            <li><a href="/menu/어드벤쳐">어드벤쳐</a> </li>
+                            <li><a href="/menu/코믹">코믹</a> </li>
+                            <li><a href="/menu/스릴러">스릴러</a> </li>
+                            <li><a href="/menu/로맨스">로맨스</a> </li>
+                            <li><a href="/menu/범죄">범죄</a> </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <div class="uk-navbar-flip">
+                <form id="searchForm"></form>
+                <input id="search" class="uk-search-field" type="search" placeholder="Search..." autocomplete="off"/>
+                <div class="uk-dropdown uk-dropdown-flip uk-dropdown-search" aria-expanded="false"></div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        $('#search').keypress(function(e) {
+            if(e.which == 13) {
+                var search = $(this).val();
+                $('#searchForm').attr({
+                    action:'/search/'+search,
+                    method:'post'
+                }).submit();
+            }
+        })
+    </script>
+    <!--     ./ Header Section   -->
+</header>

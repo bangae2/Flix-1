@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="index">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Webflix - Streaming Media Theme - Homepage v2</title>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="assets/img/x-icon"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/apple-touch-icon.png}"/>
+
+    <!--     Include UIKit CSS   -->
+    <link rel="stylesheet" th:href="@{/css/uikit.min.css}"/>
+
+    <!--     Theme CSS   -->
+    <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+    <style>
+        .cover-img {
+            width:100%;
+            height:100%;
+        }
+
+        .view {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        @media (min-width: 1220px) {
+            .uk-grid>* {
+                padding-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+
+<!--     start Main Content Section   -->
+
+<div class="uk-container uk-container-center uk-margin-large-top uk-margin-large-bottom">
+
+    <div class="uk-grid">
+
+        <div id="tm-right-section" class="uk-width-large-1-1 uk-width-medium-1-1 uk-width-small-1-1"  data-uk-scrollspy="{cls:'uk-animation-fade', target:'img'}">
+            <div style="padding-bottom: 40px;">
+                <caption th:if="${not #lists.isEmpty(videoLogs)}"><h2>최근본영상</h2></caption>
+                <div class="uk-margin" data-uk-slideset="{small: 3, medium: 4, large: 5, autoplay:true, animation:'slide-bottom'}">
+                    <div class="uk-slidenav-position uk-margin">
+                        <ul class="uk-slideset uk-grid uk-flex-center">
+                            <li th:each="log, index : ${videoLogs}" th:style="${index.count > 5 ? 'display:none;' : ''}">
+                                <div class="uk-overlay uk-overlay-hover" style="width:100%; height:300px;">
+                                    <img class="cover-img" alt="Image" th:src="@{'/viewer/image/'+${log.videosEntity.video_seq}}"/>
+                                    <div class="uk-overlay-panel uk-overlay-fade uk-overlay-background  uk-overlay-icon"></div>
+                                    <a class="uk-position-cover" th:href="@{'/media/slist/'+${log.videosEntity.video_seq}}"></a>
+                                </div>
+                                <div class="uk-panel" >
+                                    <h5 class="uk-panel-title" th:text="${log.videosEntity.title3}"></h5>
+                                </div>
+                            </li>
+                        </ul>
+                        <a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slideset-item="previous"></a>
+                        <a href="#" class="uk-slidenav uk-slidenav-next uk-slidenav-contrast" data-uk-slideset-item="next"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="uk-grid" class="uk-grid-width-1-1 uk-grid-width-large-1-5 uk-grid-width-medium-1-4 uk-grid-width-small-1-3">
+                <div class="view" th:each="videoKind, index : ${videoKinds}" th:id="@{''+paging-+''+${index.count}}" th:attr="video-kind-seq=${videoKind.video_kind_seq}">
+                    <div class="uk-overlay uk-overlay-hover" style="width:100%; height:300px;">
+                        <img class="cover-img" alt="Image" th:src="@{'/viewer/cover/'+${videoKind.video_kind_seq}}"/>
+                        <div class="uk-overlay-panel uk-overlay-fade uk-overlay-background  uk-overlay-icon"></div>
+                        <a class="uk-position-cover" th:href="@{'/media/list/' + ${videoKind.video_kind_seq}}"></a>
+                    </div>
+                    <div class="uk-panel" >
+                        <h5 class="uk-panel-title" th:text="@{${videoKind.title1} + '' + ${videoKind.title2}}"></h5>
+                        <p>
+                            <span class="rating">
+                                <i class="uk-icon-star"></i><span th:text="${videoKind.star}"></span>
+                            </span>
+                            <span class="uk-float-right" th:text="${videoKind.start_date.substring(0, 4)}">2016</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-margin-large-top uk-margin-bottom">
+                <ul class="uk-pagination" >
+                    <!--<li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>-->
+                    <!--<li th:class="${index.count / 20 == 1 ? 'uk-active' : ''}" th:each="video, index : ${videos}" th:if="${index.count % 20 == 0}"><span th:text="${index.size/20}"></span></li>-->
+
+                    <!--<li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--     ./ Main Content Section   -->
+
+<!--   Include JS   -->
+
+    <script th:src="@{/js/jquery-3.1.0.js}"></script>
+    <script th:src="@{/js/uikit.min.js}"></script>
+    <script th:src="@{/js/components/grid.min.js}"></script>
+    <script th:src="@{/js/core/nav.min.js}"></script>
+    <script th:src="@{/js/components/pagination.js}"></script>
+    <script>
+        var grid = UIkit.grid($('#uk-grid'), {
+            gutter:20,
+            colwidth:'auto'
+        });
+        function paging(page) {
+            // <![CDATA[
+            var view = 20;
+            var start = 0;
+            if(page == 1) {
+                start = 0;
+            } else {
+                start = ((page -1) * view);
+            }
+            var end = page * view -1;
+
+            $.each($('.view'), function (i) {
+                $(this).show();
+                $(this).attr('style', 'position:absolute');
+                if(!(i >= start && i <= end)) {
+                    $(this).hide();
+                }
+            })
+
+            grid.init();
+            // ]]>
+
+        }
+
+        paging(1);
+        var max = Math.floor($('.view:last').index() / 20);
+        var pagination = UIkit.pagination($('.uk-pagination'), {
+            items:max+1,
+            itemOnPage:1
+        });
+
+        pagination.on('select.uk.pagination', function(e, pageIndex){
+            var page = pageIndex+1;
+            paging(page);
+        });
+
+    </script>
+</body>
+</html>

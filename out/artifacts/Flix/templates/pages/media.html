@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="index">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Webflix - Streaming Media Theme - Homepage v2</title>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="assets/img/x-icon"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/apple-touch-icon.png}"/>
+
+    <!--     Include UIKit CSS   -->
+    <link rel="stylesheet" th:href="@{/css/uikit.min.css}"/>
+
+    <!--     Theme CSS   -->
+    <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+    <link href="http://vjs.zencdn.net/5.10.7/video-js.css" rel="stylesheet"/>
+
+</head>
+<body layout:fragment="content">
+
+<!-- start Main Content (Media Page Section) -->
+
+<div id="tm-media-section" class="uk-block uk-block-small">
+    <input type="hidden" id="video_seq" th:value="${videoLog.videosEntity.video_seq}"/>
+    <input type="hidden" id="video_kind_seq" th:value="${videoLog.videosEntity.video_kind_seq}"/>
+    <div class="uk-container uk-container-center uk-width-8-10">
+        <div class="media-container  uk-container-center">
+            <!--<a class="uk-button uk-button-large uk-button-link uk-text-muted" href="index.html"><i class=" uk-icon-arrow-left uk-margin-small-right"></i> Back</a>-->
+        </div>
+
+        <div class="uk-grid">
+            <div class="uk-width-medium-3-10">
+                <div  class="media-cover" style="margin-top: 0px;">
+                    <img th:src="@{'/viewer/image/'+ ${videoLog.videosEntity.video_seq}}" alt="Image" class="uk-scrollspy-inview uk-animation-fade" style="width: 400px;height: 445px;"/>
+                </div>
+                <a id="watchMeBtn" class="uk-button uk-button-primary uk-button-large uk-width-1-1 uk-margin-top"  th:attr="data-video-seq=${videoLog.videosEntity.video_seq}"><i class="uk-icon-television uk-margin-small-right"></i> Watch Now</a>
+                <a id="favouriteBtn" class="uk-button uk-button-link uk-text-muted uk-button-large uk-width-1-1 uk-margin-top" ><i class="uk-icon-heart uk-margin-small-right" th:style="@{'color:'+${videoFav != null  ? videoFav.video_seq == videoLog.videosEntity.video_seq ?'red;' : '' :''}}"></i> Add to Favourites</a>
+            </div>
+            <div class="uk-width-medium-7-10">
+                <div class="">
+                    <ul class="uk-tab uk-tab-grid " data-uk-switcher="{connect:'#media-tabs'}">
+                        <li class="uk-width-medium-1-3 uk-active"><a href="#">영화정보</a></li>
+                        <li class="uk-width-medium-1-3"><a href="#">리뷰</a></li>
+                        <li class="uk-width-medium-1-3"><a href="#">트레일러</a></li>
+                        <li class="uk-tab-responsive uk-active uk-hidden" aria-haspopup="true" aria-expanded="false"><a>Active</a><div class="uk-dropdown uk-dropdown-small uk-dropdown-up"><ul class="uk-nav uk-nav-dropdown"></ul><div></div></div></li></ul>
+                </div>
+
+                <ul id="media-tabs" class="uk-switcher">
+
+                    <!--     start Tab Panel 1 (Reviews Sections) -->
+
+                    <li>
+                        <h2 class="uk-text-contrast uk-margin-large-top" th:text="${videoLog.videosEntity.title3}"><span class="rating uk-margin-small-left uk-h4 uk-text-warning">
+                                                <i class="uk-icon-star "></i>
+                                                <i class="uk-icon-star"></i>
+                                                <i class="uk-icon-star"></i>
+                                                <i class="uk-icon-star"></i>
+                                                <i class="uk-icon-star"></i>
+                                            </span></h2>
+                        <ul class="uk-subnav uk-subnav-line">
+                            <li><i class="uk-icon-star uk-margin-small-right"></i><span th:utext="${videoKind.star}"></span> </li>
+                            <li><i class="uk-icon-clock-o uk-margin-small-right"></i> 108 Mins</li>
+                            <li th:text="${videoKind.start_date}"></li>
+                        </ul>
+                        <hr/>
+                        <p class="uk-text-muted uk-h4" th:text="${videoLog.videosEntity.story}"></p>
+                        <dl class="uk-description-list-horizontal uk-margin-top">
+                            <dt>배우</dt>
+                            <dd><ul class="uk-subnav ">
+                                <li th:text="${videoKind.actor}"></li>
+                            </ul></dd>
+                            <dt>장르</dt>
+                            <dd><ul class="uk-subnav ">
+                                <li th:text="${videoKind.genre}"></li>
+                            </ul></dd>
+                            <dt>국가</dt>
+                            <dd><ul class="uk-subnav ">
+                                <li th:text="${videoKind.country}"></li>
+                            </ul></dd>
+                        </dl>
+
+                    </li>
+
+                    <!--    ./ Tab Panel 1  -->
+
+                    <!--     start Tab Panel 2  (Reviews Section) -->
+
+                    <li>
+                        <div class="uk-margin-small-top">
+                            <h3 class="uk-text-contrast uk-margin-top">Post a Review</h3>
+                            <div class="uk-alert uk-alert-warning" data-uk-alert="">
+                                <a href="" class="uk-alert-close uk-close"></a>
+                                <p><i class="uk-icon-exclamation-triangle uk-margin-small-right "></i> Please <a class="uk-text-contrast" href="login.html"> Log in</a> or Sign up to post reviews quicker.</p>
+                            </div>
+                            <form class="uk-form uk-margin-bottom">
+                                <div class="uk-form-row">
+                                    <textarea class="uk-width-1-1" cols="30" rows="5" placeholder="Type your review here..."></textarea>
+                                    <p class="uk-form-help-block">The <code>.uk-form-help-block</code> class creates an associated paragraph.</p>
+                                </div>
+                                <div class="uk-form-row">
+                                    <a href="" class="uk-button uk-button-large uk-button-success uk-float-right">Post</a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div  class="uk-scrollable-box uk-responsive-width " data-simplebar-direction="vertical">
+                            <ul class="uk-comment-list uk-margin-top" >
+                                <li>
+                                    <article class="uk-comment uk-panel uk-panel-space uk-panel-box-secondary">
+                                        <header class="uk-comment-header">
+                                            <img class="uk-comment-avatar uk-border-circle" src="assets/img/avatar3.jpg" width="50" height="50" alt=""/>
+                                            <h4 class="uk-comment-title">@movielover</h4>
+                                            <div class="uk-comment-meta">2 days ago </div>
+                                        </header>
+                                        <div class="uk-comment-body">
+                                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+                                        </div>
+                                    </article>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!--     ./ Tab Panel 2  -->
+
+
+                    <!--     start Tab Panel 3 (Trailer Section)  -->
+
+                    <li>
+                        <div class="uk-cover uk-margin-top" style="height: 400px;">
+                            <!--<iframe data-uk-cover="data-uk-cover" src="http://www.youtube.com/embed/YE7VzlLtp-4?autoplay=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;loop=1&amp;modestbranding=1&amp;wmode=transparent" width="560" height="315" frameborder="0" allowfullscreen=""></iframe>-->
+                        </div>
+                    </li>
+
+                    <!--     ./ Tab Panel 3  -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ./ Main Content (Media Page Section) -->
+<div class="uk-block ">
+    <div class="uk-container-center uk-container uk-margin-large-bottom">
+        <h3 class="uk-margin-large-bottom uk-text-contrast">관련영상</h3>
+        <div class="uk-margin" data-uk-slideset="{small: 2, medium: 4, large: 6, autoplay:true, animation:'slide-bottom'}">
+            <div class="uk-slidenav-position uk-margin">
+                <ul class="uk-slideset uk-grid uk-flex-center uk-grid-width-1-1 uk-grid-width-large-1-6 uk-grid-width-medium-1-4 uk-grid-width-small-1-2">
+                    <li th:each="vi, index : ${videos}">
+                        <a th:href="@{'/media/slist/' +${vi.video_seq}}">
+                            <img th:src="@{'/viewer/image/' + ${vi.video_seq}}" th:style="@{'width: 600px;height: 300px; opacity:'+${vi.video_seq == videoLog.videosEntity.video_seq ? '0.1;': ''}}" alt="" th:text="${vi.title3}"/>
+                        </a>
+                    <i th:if="${vi.video_seq == videoLog.videosEntity.video_seq}" class="fa fa-play-circle-o video-play" aria-hidden="true"/></li>
+                </ul>
+                <a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slideset-item="previous"></a>
+                <a href="#" class="uk-slidenav uk-slidenav-next uk-slidenav-contrast" data-uk-slideset-item="next"></a>
+            </div>
+            <ul class="uk-slideset-nav uk-dotnav uk-dotnav-contrast uk-flex-center uk-margin-top"><li data-uk-slideset-item="0" class="uk-active"><a></a></li><li data-uk-slideset-item="1"><a></a></li><li data-uk-slideset-item="2"><a></a></li></ul>
+        </div>
+    </div>
+</div>
+<div class="video-fade">
+    <video id="video" controls="controls" class="video-js vjs-default-skin vjs-big-play-centered" preload="none" width="100%" height="100%" style="width:100%; height:100%;">
+        <source type="video/mp4"/>
+    </video>
+    <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+    <i class="fa fa-th-list" aria-hidden="true"></i>
+    <div class="play-list-fade">
+        <div class="play-list-content"></div>
+        <div class="play-list-menu">
+            <h3 style="padding-left:10px;">재생목록</h3>
+            <ul class="uk-list uk-list-line" style="padding-top:20px;">
+                <li th:class="${videos[0].video_seq == vi.video_seq ? 'active':''}" th:each="vi, index:${videos}" th:attr="data-video-seq=${vi.video_seq}" th:attrappend="data-video-kind-seq=${vi.video_kind_seq}">
+                    <i class="fa fa-play-circle-o" aria-hidden="true" style="padding-left:5px;" th:if="${videos[0].video_seq == vi.video_seq}"/>
+                    <span style="padding-left:10px;" th:text="${vi.title3}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="next-movie">
+        <div>
+            <img src=""/>
+            <i class="fa fa-play-circle-o next-movie-icon" aria-hidden="true"/>
+            <div class="next-movie-text"><span>10</span>초후 자동재생됩니다.</div>
+        </div>
+    </div>
+</div>
+<!--   Include JS   -->
+
+    <script th:src="@{/js/jquery-3.1.0.js}"></script>
+    <script th:src="@{/js/uikit.js}"></script>
+    <script th:src="@{/js/components/grid.js}"></script>
+    <script th:src="@{/js/core/nav.min.js}"></script>
+    <script src="http://vjs.zencdn.net/5.10.7/video.js"></script>
+    <script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+    <script>
+        var player;
+
+        /* 즐겨찾기 추가 */
+        $('#favouriteBtn').click(function() {
+            var video_seq = $('#video_seq').val();
+            $.ajax({
+                url:'/fav/save/'+video_seq,
+                type:'post',
+                success:function(data) {
+                    if(data == 'S') {
+                        $('.uk-icon-heart').css('color', 'red');
+                    } else {
+                        $('.uk-icon-heart').css('color', '');
+                    }
+                }, error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        })
+
+        /*동영상 풀스크린 확인*/
+        function fullScreenCheck() {
+            var flag = player.isFullscreen()
+            console.log(flag);
+            if(flag) {
+                // <![CDATA[
+                if($('.fa-th-list').attr('class').indexOf('fa-th-list-full') < 0) {
+                    $('.fa-th-list').addClass('fa-th-list-full');
+                    $('.fa-th-list').on('mouseenter', function() {
+                        $('.fa-th-list').trigger('click');
+                    })
+                    $('.play-list-menu').on('mouseleave', function() {
+                        $('.play-list-fade div:not(.play-list-menu)').trigger('click');
+                    })
+                }
+                // ]]>
+            } else {
+                $('.fa-th-list').removeClass('fa-th-list-full');
+                $('.fa-th-list').off('mouseenter');
+                $('.play-list-menu').off('mouseleave');
+            }
+        }
+
+        var fullCheck = setInterval(fullScreenCheck, 1000);
+
+
+
+        /*video 태그 로드 완료시*/
+
+        var video = videojs('video').ready(function(){
+            player = this;
+            $.videoEventSetting(player);
+        });
+
+
+        /* 플레이 리스트 열기 이벤트 */
+        $('.fa-th-list').click(function() {
+            $(this).hide();
+            $('.play-list-fade').fadeIn('slow');
+            $('.play-list-fade').off('click');
+            $('.play-list-fade div:not(.play-list-menu)').on('click',function() {
+                $('.play-list-fade').fadeOut('slow');
+                $('.fa-th-list').show();
+            })
+        })
+
+        /*뒤로가기 */
+        $('.fa-arrow-circle-o-left').click(function() {
+            player.pause();
+            $('.video-fade').slideUp('slow');
+            $('footer').show();
+            $('.video-btn-group').hide();
+            $('html').removeClass('overflow-hidden');
+            nextMovieHide();
+        })
+
+        /* 영상보기 클릭시 */
+        $('#watchMeBtn').click(function() {
+            var video_seq = $(this).attr('data-video-seq');
+            var url = $.play(video_seq);
+            $('.play-list-menu').find('li[data-video-seq='+video_seq+']').trigger('click');
+            $('.video-fade').slideDown('slow');
+            $('.video-btn-group').show();
+
+            /*footer 숨기기*/
+            $('footer').hide();
+
+            /* html 스크롤 없애기*/
+            $('html').addClass('overflow-hidden');
+
+            /* 로그 기록 */
+            var video_kind_seq = $('#video_kind_seq').val();
+            $.logSave(video_seq, video_kind_seq);
+
+
+
+            $('video').mouseenter(function() {
+                $(document).on('keydown',function(e) {
+                    if(e.which == 39)player.currentTime(player.currentTime()  + 5);
+                    if(e.which == 37)player.currentTime(player.currentTime()  - 5);
+                })
+            })
+
+            $('video').mouseleave(function() {
+                $(document).off("keydown");
+            })
+        })
+
+        /* 플레이 리스트 다른영상 선택시*/
+        $('.play-list-menu li').click(function() {
+            player.pause();
+            $('.play-list-menu li i').remove();
+            $('.play-list-menu li').removeClass('active');
+            $(this).addClass('active');
+            $(this).prepend('<i class="fa fa-play-circle-o" aria-hidden="true" style="padding-left:5px;"/>');
+            var video_seq = $(this).attr('data-video-seq');
+            var url = $.play(video_seq);
+
+            /* 로그 기록 */
+            var video_kind_seq = $('#video_kind_seq').val();
+            $.logSave(video_seq, video_kind_seq);
+        })
+
+        /* 동영상 플레이 function*/
+        $.play = function(video_seq) {
+
+            var url;
+            $.ajax({
+                url:'/viewer/video/'+video_seq,
+                type:'post',
+                success:function(data) {
+                    url = data;
+                    $('.loading-content').hide();
+                    player.src({"type":"video/mp4", "src":url});
+                    player.play()
+                }, error:function(xhr, status, error) {
+                    console.log(error);
+                }, beforeSend:function() {
+                    $('.loading-content').show();
+                }
+            })
+            return url;
+        }
+        /*로그 기록*/
+        $.logSave = function(video_seq, video_kind_seq) {
+            $.ajax({
+                url:'/media/log/save/' + video_kind_seq + '/'+video_seq,
+                type:'post',
+                success:function(data) {
+                    console.log(data)
+                }, error:function(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        }
+
+
+        var nextMovieShowInterval;
+        /*비디오 이벤트 설정*/
+        $.videoEventSetting = function(pla) {
+            pla.off('ended').on('ended', function() {
+                $.each($('.play-list-menu li'), function() {
+                    var flag = false;
+                    var cla = $(this).attr('class');
+                    $(this).removeClass('active');
+                    if(cla == 'active') {
+                        $(this).next().addClass('active').trigger('click');
+                        flag = true;
+                        nextMovieHide();
+                    }
+                    if(flag) {
+                        return false;
+                    }
+                })
+            });
+
+            /*동영상 준비 완료 이벤트*/
+            pla.off('loadstart').on('loadstart', function() {
+                nextMovieShowInterval = setInterval(timeupdate(pla), 2000);
+            })
+        }
+
+        function timeupdate(pla) {
+
+            var timeupdateCount = 0;
+            pla.on('timeupdate', function() {
+                var duration = Math.floor(this.duration());
+                var current = Math.floor(this.currentTime());
+                if(current != 0) {
+                    window.clearInterval(nextMovieShowInterval);
+                    // <![CDATA[
+                    if((duration - 10) <= current) {
+                        $('.next-movie-text span').text(duration - current);
+                        if(timeupdateCount == 0) {
+                            nextMovieShow();
+                        }
+                        timeupdateCount++;
+
+                    }
+                    // ]]>
+                }
+            })
+        }
+
+        function nextMovieShow() {
+            var video_kind_seq = $('.play-list-menu li.active').next().attr('data-video-kind-seq');
+            var video_seq = $('.play-list-menu li.active').next().attr('data-video-seq');
+            $('.video-fade div.video-js').css({
+                'background-image':'url("/viewer/cover/'+video_kind_seq+'")',
+                'background-size':'100% 100%'
+            });
+            var width = $(window).width();
+            var w = "100%";
+            // <![CDATA[
+            if(width > 0 && width < 720) {
+                w = "100%";
+            } else if(width > 720 && width < 960) {
+                w = "50%";
+            } else if(width > 960 && width < 1280) {
+                w = "45%";
+            } else {
+                w = "40%";
+            }
+            // ]]>
+            $('video').css({'width':w, 'height':'45%', 'top':'55px'});
+            $('.next-movie').show();
+            $('.next-movie img').attr('src', '/viewer/image/'+video_seq);
+        }
+
+        function nextMovieHide() {
+            $('.video-fade').children('div').css({
+                'background-image':'',
+                'background-size':''
+            });
+            $('video').css({'width':'100%', 'height':'100%', 'top':'0px'});
+            $('.next-movie').hide();
+        }
+    </script>
+</body>
+</html>

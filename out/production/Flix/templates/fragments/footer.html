@@ -1,0 +1,84 @@
+<footer layout:fragment="footer">
+    <!--     start Footer Section   -->
+
+    <footer id="tm-footer" class="uk-block uk-block-secondary uk-block-small">
+        <div class="uk-container-center uk-container">
+            <div class="uk-grid">
+                <div class="uk-width-medium-3-10"><div class="copyright-text"> 2016 <span class="uk-text-bold">Webflix</span> - Streaming Media</div></div>
+
+                <div class="uk-width-medium-7-10">
+                    <div class=" uk-float-right">
+                        <ul class="uk-subnav">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--     ./ Footer Section   -->
+
+    <!--     start Offcanvas Menu   -->
+
+    <div id="offcanvas" class="uk-offcanvas">
+        <div class="uk-offcanvas-bar">
+            <div class="uk-panel">
+                <form class="uk-search">
+                    <input class="uk-search-field" type="search" placeholder="Search..."/>
+                </form>
+                <div class="uk-button-group">
+                    <div class="uk-button-dropdown" aria-haspopup="true" aria-expended="false" aria-expanded="false">
+                        <a class="uk-dropdown-btn uk-button uk-button-link uk-button-large uk-text-muted"  sec:authentication="name"></a>
+                        <div class="uk-dropdown-content uk-dropdown uk-dropdown-bottom" style="top: 40px; left: 0px;">
+                            <ul class="uk-nav uk-nav-dropdown">
+                                <li class="nav-header">USER</li>
+                                <li><a href="/fav/list">플레이리스트</a></li>
+                                <li class="uk-nav-divider"></li>
+                                <li class="nav-header">ADMIN</li>
+                                <li><a href="/admin/kind">영화</a></li>
+                                <li class="uk-nav-divider"></li>
+                                <li><a href="/logout">로그아웃</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                $('.uk-dropdown-btn').click(function() {
+                    var display = $('.uk-dropdown-content').css('display');
+                    if(display == 'block') {
+                        $('.uk-dropdown-content').css('display', 'none');
+                    } else {
+                        $('.uk-dropdown-content').css('display', 'block');
+                    }
+                })
+            </script>
+            <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="data-uk-nav">
+                <li class="uk-active"><a href="/">전체</a></li>
+                <li><a href="#">추천</a></li>
+                <li><a href="/menu/영화">영화</a></li>
+                <li><a href="/menu/드라마">드라마</a></li>
+                <li>
+                    <a id="genreBtn" href="#">장르 <i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                    <ul class="uk-nav-sub uk-hidden" style="margin-left: 20px;">
+                        <li><a href="/menu/판타지">판타지</a></li>
+                        <li><a href="/menu/애니">애니</a> </li>
+                        <li><a href="/menu/SF">SF</a> </li>
+                        <li><a href="/menu/어드벤쳐">어드벤쳐</a> </li>
+                        <li><a href="/menu/코미디">코미디</a> </li>
+                        <li><a href="/menu/스릴러">스릴러</a> </li>
+                        <li><a href="/menu/로맨스">로맨스</a> </li>
+                        <li><a href="/menu/범죄">범죄</a> </li>
+                    </ul>
+                </li>
+                <script>
+                    $('#genreBtn').click(function() {
+                        $('.uk-nav-sub').toggleClass('uk-hidden');
+                    })
+                </script>
+            </ul>
+        </div>
+    </div>
+
+    <!--   ./ Offcanvas Menu   -->
+</footer>

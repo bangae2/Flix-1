@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="index">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Webflix - Streaming Media Theme - Homepage v2</title>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="assets/img/x-icon"/>
+    <link rel="apple-touch-icon-precomposed" th:href="@{/img/apple-touch-icon.png}"/>
+
+    <!--     Include UIKit CSS   -->
+    <link rel="stylesheet" th:href="@{/css/uikit.min.css}"/>
+
+    <!--     Theme CSS   -->
+    <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+    <style>
+        div.kind, div.movie {
+            width:100%;
+            height:500px;
+            overflow:auto;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+<div class="uk-container uk-container-center uk-margin-large-top uk-margin-large-bottom">
+    <div class="kind-header">
+        <table class="uk-table uk-table-striped" id="kind-header">
+            <caption><h2>카테고리</h2></caption>
+            <thead>
+                <tr>
+                    <th class="uk-text-center" width="10%">SEQ</th>
+                    <th class="uk-text-center" width="25%">제목</th>
+                    <th class="uk-text-center" width="10%">시즌</th>
+                    <th class="uk-text-center" width="10%">제작국가</th>
+                    <th class="uk-text-center" width="15%">장르</th>
+                    <th class="uk-text-center" width="10%">사용여부</th>
+                    <th class="uk-text-center">삭제</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="kind">
+        <table class="uk-table uk-table-striped" id="kind">
+            <tbody>
+                <tr th:each="kind, index : ${kinds}" th:id="@{'kind-'+${index.count}}">
+                    <td class="uk-text-center" width="10%" th:text="${kind.video_kind_seq}"></td>
+                    <td width="25%" th:text="${kind.title1}"></td>
+                    <td width="10%" class="uk-text-center" th:text="${kind.title2}"></td>
+                    <td width="10%" class="uk-text-center" th:text="${kind.country}"></td>
+                    <td width="15%" th:text="${kind.genre}"></td>
+                    <td width="10%" class="uk-text-center" th:text="${kind.flag}"></td>
+                    <td class="uk-text-right">
+                        <button class="uk-button uk-button-success thumbnail-btn">썸네일</button>
+                        <button class="uk-button uk-button-danger kind-del-btn" th:attr="data-video-kind-seq=${kind.video_kind_seq}">삭제</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:right">
+        <button class="uk-button uk-button-primary" style="margin-top:20px;" data-uk-modal="{target:'#kind-modal', bgclose:false}">파일업로드</button>
+    </div>
+
+    <div id="kind-modal" class="uk-modal">
+        <div class="uk-modal-dialog">
+            <a class="uk-modal-close uk-close"></a>
+            <div class="uk-modal-header">
+                <h2>카테고리등록</h2>
+            </div>
+            <div class="uk-modal-body">
+                <form class="uk-form" enctype="multipart/form-data" id="kind-form">
+                    <fieldset>
+                        <div class="uk-form-row">
+                            <label for="title1">제목</label>
+                            <input type="text" id="title1" name="title1" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">시즌</label>
+                            <input type="text" id="title2" name="title2" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">제작국가</label>
+                            <input type="text" id="country" name="country" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">배우</label>
+                            <input type="text" id="actor" name="actor" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">장르</label>
+                            <input type="text" id="genre" name="genre" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">평점</label>
+                            <input type="text" id="star" name="star" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">반영일</label>
+                            <input type="text" id="start_date" name="start_date" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">사용여부</label>
+                            <input type="checkbox" id="flag" name="flag" class="uk-width-1-1"/>
+                        </div>
+                        <div id="upload-drop" class="uk-placeholder uk-text-center">
+                            <i class="uk-icon-cloud-upload uk-icon-medium uk-text-muted uk-margin-small-right"></i> 커버사진 업로드 : <a class="uk-form-file">파일선택<input id="thumbnail" name="thumbnail" type="file" accept="image/*"/></a>.
+                        </div>
+                        <div id="progressbar" class="uk-progress uk-hidden">
+                            <div class="uk-progress-bar" style="width: 0%;">0%</div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button type="button" id="kind-upload-btn" class="uk-button uk-button-primary">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="movies-header">
+        <table class="uk-table uk-table-striped" id="movies-header">
+            <caption><h2>영화(<span id="movie-title"></span>)</h2></caption>
+            <thead>
+            <tr>
+                <th class="uk-text-center" style="width:5%">SEQ</th>
+                <th class="uk-text-center" style="width:25%">파일명</th>
+                <th class="uk-text-center" style="width:20%">파일경로</th>
+                <th class="uk-text-center" style="width:10%">제목</th>
+                <th class="uk-text-center" style="width:20%">썸네일</th>
+                <th class="uk-text-center">삭제</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="movies">
+        <table class="uk-table uk-table-striped" id="movies">
+            <tbody>
+            <tr th:each="movie, index : ${movies}" th:id="@{'movie-'+${index.count}}">
+                <td class="uk-text-center" style="width:5%;" th:text="${movie.video_seq}"></td>
+                <td style="width:25%" th:text="${movie.file_name}"></td>
+                <td style="width:20%" th:text="${movie.file_path}"></td>
+                <td style="width:10%" th:text="${movie.title3}"></td>
+                <td style="width:20%" th:text="${movie.thumbnail}"></td>
+                <td class="uk-text-right"><button class="uk-button uk-button-danger movie-del-btn" th:attr="data-video-seq=${movie.video_seq}">삭제</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:right">
+        <button class="uk-button uk-button-primary" style="margin-top:20px;" data-uk-modal="{target:'#movie-modal', bgclose:false}">파일업로드</button>
+    </div>
+
+    <div id="movie-modal" class="uk-modal">
+        <div class="uk-modal-dialog">
+            <a class="uk-modal-close uk-close"></a>
+            <div class="uk-modal-header">
+                <h2>영화등록</h2>
+            </div>
+            <div class="uk-modal-body">
+                <form class="uk-form" enctype="multipart/form-data" id="movie-form">
+                    <input type="hidden" name="video_kind_seq" id="video_kind_seq" th:value="${movies[0].video_kind_seq}"/>
+                    <fieldset>
+                        <div class="uk-form-row">
+                            <label for="title1">제목</label>
+                            <input type="text" id="title3" name="title3" class="uk-width-1-1"/>
+                        </div>
+                        <div class="uk-form-row">
+                            <label for="title2">스토리</label>
+                            <textarea rows="3" id="story" name="story" class="uk-width-1-1"/>
+                        </div>
+                        <div id="mupload-drop" class="uk-placeholder uk-text-center">
+                            <i class="uk-icon-cloud-upload uk-icon-medium uk-text-muted uk-margin-small-right"></i> 커버사진 업로드 : <a class="uk-form-file">파일선택<input id="movie" name="movie" type="file" accept="video/*"/></a>.
+                        </div>
+                        <div id="mprogressbar" class="uk-progress uk-hidden">
+                            <div class="uk-progress-bar" style="width: 0%;">0%</div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button type="button" id="movie-upload-btn" class="uk-button uk-button-primary">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $('#thumbnail').change(function() {
+        $('#kind-form .uk-grid').remove();
+        fileInfoAppend('kind-form', this);
+    })
+
+    $('#movie').change(function() {
+        $('#movie-form .uk-grid').remove();
+        fileInfoAppend('movie-form', this);
+    })
+
+    function fileInfoAppend(form_id, _this) {
+        // <![CDATA[
+        for(var i=0; i<$(_this)[0].files.length; i++) {
+            var file = $(_this)[0].files[i];
+            var name = file.name;
+            var size = file.size;
+            var html = [];
+            html.push('<div class="uk-grid">');
+            html.push('<div class="uk-width-1-2">'+name+'</div>');
+            html.push('<div class="uk-width-1-2 uk-text-right">'+size+'</div>');
+            html.push('</div>');
+            $('#'+form_id).append(html.join(''));
+        }
+        // ]]>
+    }
+
+
+    $('#kind-upload-btn').click(function() {
+
+        if(confirm('저장하시겠습니까?')) {
+            var progressbar = $("#progressbar");
+            var formData = new FormData($('#kind-form')[0]);
+            var bar         = progressbar.find('.uk-progress-bar');
+            var star = $('input[name=star]').val();
+            var flag = true;
+            if(Number(star) > 5) {
+                $.alert("평점은 5이하로 작성해주세요");
+                flag = false;
+            }
+
+            if(flag) {
+                $.ajax({
+                    url:'/admin/kindUP',
+                    data:formData,
+                    type:'post',
+                    processData:false,
+                    contentType:false,
+                    beforeSend:function(xhr, setting) {
+                        bar.css("width", "0%").text("0%");
+                        progressbar.removeClass("uk-hidden");
+                    }, error:function(xhr, status, error) {
+                        alert(error);
+                    }, success: function(data) {
+                        bar.css("width", "100%").text("100%");
+
+                        setTimeout(function(){
+                            progressbar.addClass("uk-hidden");
+                        }, 250);
+
+                        $('#kind-form').find('input').val("");
+
+                        $('#kind').kindAppend(data);
+                        $('.uk-modal').hide();
+                        $('.uk-modal-page').css('overflow', 'auto');
+                    }, xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        console.log(1);
+                        bar.css("width", '0%').text('0%');
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            var percentComplete = evt.loaded / evt.total;
+                            bar.css("width", percentComplete * 100 + '%').text(percentComplete * 100 + '%');
+                            if (percentComplete === 1) {
+                                progressbar.addClass("uk-hidden");
+                            }
+                        }, false);
+
+                        xhr.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                bar.css("width", percentComplete * 100 + '%').text(percentComplete * 100 + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    }
+                })
+            }
+
+        }
+    })
+
+    $('#movie-upload-btn').click(function() {
+
+        if(confirm('저장하시겠습니까?')) {
+            var progressbar = $("#mprogressbar");
+            var formData = new FormData($('#movie-form')[0]);
+            var bar         = progressbar.find('.uk-progress-bar');
+
+            $.ajax({
+                url:'/admin/movieUP',
+                data:formData,
+                type:'post',
+                processData:false,
+                contentType:false,
+                beforeSend:function(xhr, setting) {
+                    bar.css("width", "0%").text("0%");
+                    progressbar.removeClass("uk-hidden");
+                }, error:function(xhr, status, error) {
+                    alert(error);
+                }, success: function(data) {
+                    bar.css("width", "100%").text("100%");
+
+                    setTimeout(function(){
+                        progressbar.addClass("uk-hidden");
+                    }, 250);
+
+                    $('#movie-form').find('input').val("");
+
+                    $('#movies').movieAppend(data);
+                    $('.uk-modal').hide();
+                    $('.uk-modal-page').css('overflow', 'auto');
+                }, xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    console.log(1);
+                    bar.css("width", '0%').text('0%');
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        var percentComplete = evt.loaded / evt.total;
+                        bar.css("width", percentComplete * 100 + '%').text(percentComplete * 100 + '%');
+                        if (percentComplete === 1) {
+                            progressbar.addClass("uk-hidden");
+                        }
+                    }, false);
+
+                    xhr.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            bar.css("width", percentComplete * 100 + '%').text(percentComplete * 100 + '%');
+                        }
+                    }, false);
+                    return xhr;
+                }
+            })
+        }
+
+    })
+
+    $(document).on('click', '#kind tr', function() {
+        var video_kind_seq = $(this).find('td:eq(0)').text().trim(" ");
+        $('#movie-title').text($(this).find('td:eq(1)').text());
+        $('#movie-modal').find('#video_kind_seq').val(video_kind_seq);
+        $.ajax({
+            url:'/admin/findMovie/' + video_kind_seq,
+            type:'post',
+            dataType:'json',
+            async:false,
+            success:function(data) {
+
+                $('#movies').empty();
+                var table = [];
+                $.each(data, function(i) {
+                    table.push('<tr id="movie-'+i+'">');
+                    table.push('    <td style="text-align:center; width:5%;">'+this.video_seq+'</td>');
+                    table.push('    <td style="width:25%">'+this.file_name+'</td>');
+                    table.push('    <td style="width:20%">'+this.file_path+'</td>');
+                    table.push('    <td style="width:10%">'+this.title3+'</td>');
+                    table.push('    <td style="width:20%">'+this.thumbnail+'</td>');
+                    table.push('    <td align="right"><button class="uk-button uk-button-danger movie-del-btn" data-video-seq="'+this.video_seq+'">삭제</button></td>');
+                    table.push('</tr>');
+                })
+                $('#movies').html(table.join(''));
+            }, error:function(xhr, status, error) {
+                alert(error);
+            }
+        })
+    })
+
+    $(document).on('click', '.movie-del-btn', function() {
+        var video_seq = $(this).attr('data-video-seq');
+        var _this = $(this);
+        if(confirm("삭제하시겠습니까?")) {
+            $.ajax({
+                url:'/admin/movieDel/'+video_seq,
+                type:'post',
+                success:function(data) {
+                    _this.closest('tr').remove();
+                }, error:function(xhr, status, error) {
+                    alert(error);
+                }
+            })
+        }
+    })
+
+    $(document).on('click', '.kind-del-btn', function() {
+        var video_kind_seq = $(this).attr('data-video-kind-seq');
+        var _this = $(this);
+        if(confirm("삭제하시겠습니까?")) {
+            $.ajax({
+                url:'/admin/kindDel/'+video_kind_seq,
+                type:'post',
+                success:function(data) {
+                    _this.closest('tr').remove();
+                }, error:function(xhr, status, error) {
+                    alert(error);
+                }
+            })
+        }
+    })
+
+    $.fn.kindAppend = function(data) {
+        var table = "";
+
+
+        table += '<tr>';
+            table += '<td class="uk-text-center" width="10%">'+data.video_kind_seq+'</td>';
+            table += '<td  width="30%">'+data.title1+'</td>';
+            table += '<td  width="10%" class="uk-text-center">'+data.title2+'</td>';
+            table += '<td  width="10%" class="uk-text-center">'+data.country+'</td>';
+            table += '<td  width="20%" >'+data.genre+'</td>';
+            table += '<td  width="10%" class="uk-text-center">'+data.flag+'</td>';
+            table += '<td align="right"><button class="uk-button uk-button-danger kind-del-btn" data-video-kind-seq="'+data.video_kind_seq+'">삭제</button></td>';
+        table += '</tr>';
+        $(this).prepend(table);
+    }
+
+    $.fn.movieAppend = function(data) {
+        var table = "";
+
+        table += '<tr>';
+        table += '<td class="uk-text-center" style="width:5%">'+data.video_seq+'</td>';
+        table += '<td style="width:25%">'+data.file_name+'</td>';
+        table += '<td style="width:20%">'+data.file_path+'</td>';
+        table += '<td style="width:10%">'+data.title3+'</td>';
+        table += '<td style="width:20%">'+data.thumbnail+'</td>';
+        table += '<td class="uk-text-right"><button class="uk-button uk-button-danger movie-del-btn" data-video-seq="'+data.video_seq+'">삭제</button></td>';
+        table += '</tr>';
+        $(this).prepend(table);
+    }
+
+    $(document).on('click', '.thumbnail-btn', function() {
+        var video_kind_seq = $(this).closest('tr').find('td:eq(0)').text().trim();
+        if(confirm("썸네일을 생성하시겠습니까?")) {
+            $.ajax({
+                url:'/admin/thumbnail/'+video_kind_seq,
+                type:'post',
+                success:function(data) {
+                    alert(data);
+                }, error:function(xhr, status, error) {
+                    alert(error);
+                }
+            })
+        }
+
+    })
+</script>
+</body>
+</html>
